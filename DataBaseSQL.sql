@@ -42,3 +42,14 @@ CREATE TABLE cash (
     orders JSON NOT NULL,
     total DECIMAL(10, 2) NOT NULL
 );
+
+INSERT INTO users (username, password, role) VALUES 
+('encargado', '$2b$10$eW5p0I1Qq4uZ9O/RHd2YZee6SvM7uK1o7E6MxHKxK1tU1F7c7jq3e', 'encargado');
+
+-- Camarero user
+INSERT INTO users (username, password, role) VALUES 
+('camarero', '$2b$10$eW5p0I1Qq4uZ9O/RHd2YZee6SvM7uK1o7E6MxHKxK1tU1F7c7jq3e', 'camarero');
+
+-- Cocina user
+INSERT INTO users (username, password, role) VALUES 
+('cocina', '$2b$10$eW5p0I1Qq4uZ9O/RHd2YZee6SvM7uK1o7E6MxHKxK1tU1F7c7jq3e', 'cocina');
