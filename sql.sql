@@ -9,7 +9,8 @@ CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role ENUM('encargado', 'camarero', 'cocina') NOT NULL
+    role ENUM('encargado', 'camarero', 'cocina') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabla para guardar el inventario
@@ -43,6 +44,11 @@ CREATE TABLE daily_revenue (
     total DECIMAL(10, 2) NOT NULL  -- Total ganado en ese día
 );
 
+-- Relación entre orders y tables
+-- No se necesita una tabla de relación explícita, solo se hace referencia por el número de mesa
+-- Relación entre orders y inventory (por los items en el JSON, se manejan a través de la lista de productos pedidos)
+
+-- Inserción de datos de ejemplo (opcional)
 -- Insertar algunos datos de ejemplo en la tabla users
 INSERT INTO users (name, password, role) VALUES 
 ('Encargado', '$2b$10$eW5p0I1Qq4uZ9O/RHd2YZee6SvM7uK1o7E6MxHKxK1tU1F7c7jq3e', 'encargado'),
