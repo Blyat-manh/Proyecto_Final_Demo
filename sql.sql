@@ -45,6 +45,16 @@ CREATE TABLE daily_revenue (
     total DECIMAL(10, 2) NOT NULL  -- Total ganado en ese día
 );
 
+CREATE TABLE DiscountRates (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    min_order_amount DECIMAL(10, 2) NOT NULL,
+    discount_rate DECIMAL(5, 2) NOT NULL
+);
+
+INSERT INTO DiscountRates (min_order_amount, discount_rate) VALUES
+(50.00, 5.00),
+(100.00, 10.00);
+
 -- Relación entre orders y tables
 -- No se necesita una tabla de relación explícita, solo se hace referencia por el número de mesa
 -- Relación entre orders y inventory (por los items en el JSON, se manejan a través de la lista de productos pedidos)
