@@ -17,7 +17,8 @@ CREATE TABLE users (
 CREATE TABLE inventory (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    price DECIMAL(10, 2) NOT NULL
+    price DECIMAL(10, 2) NOT NULL,
+    type VARCHAR(100) NOT NULL
 );
 
 -- Tabla para guardar los pedidos
@@ -57,10 +58,10 @@ INSERT INTO users (name, password, role) VALUES
 
 -- Insertar algunos datos de ejemplo en la tabla inventory
 INSERT INTO inventory (name, price) VALUES 
-('Pizza', 8.50),
-('Pasta', 6.00),
-('Ensalada', 4.00),
-('Bebida', 2.50);
+('Pizza', 8.50, 'tapa'),
+('Pasta', 6.00, 'tapa'),
+('Ensalada', 4.00, 'tapa'),
+('Bebida', 2.50, 'bebida');
 
 -- Insertar algunos datos de ejemplo en la tabla tables
 INSERT INTO tables (table_number, total) VALUES 
