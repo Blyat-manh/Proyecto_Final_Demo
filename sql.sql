@@ -30,6 +30,13 @@ CREATE TABLE orders (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE paid_orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    table_number INT NOT NULL,  -- El número de mesa
+    items JSON NOT NULL,        -- Lista de los objetos pedidos en formato JSON
+    total DECIMAL(10, 2) NOT NULL, -- Total del pedido
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 -- Tabla para guardar las mesas
 CREATE TABLE tables (
     id INT AUTO_INCREMENT PRIMARY KEY,
