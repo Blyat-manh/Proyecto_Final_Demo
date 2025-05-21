@@ -18,17 +18,46 @@ const calculateTotal = (items) => {
 // Crear un nuevo pedido
 const createOrder = async (req, res) => {
   const { table_number, items } = req.body;
+
   try {
-    // Calcula el total del pedido
-    const total = calculateTotal(items);
+    // Calcular total original
+    const rawTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+    // Obtener todos los descuentos
+    const [DiscountRates] = await pool.query('SELECT * FROM DiscountRates');
+
+    // Encontrar el mayor descuento aplicable
+    let applicableDiscount = 0;
+
+    for (const discount of DiscountRates) {
+      if (rawTotal >= discount.min_order_amount && discount.discount_rate > applicableDiscount) {
+        applicableDiscount = discount.discount_rate;
+      }
+    }
+
+    // Aplicar el descuento
+    const totalWithDiscount = parseFloat((rawTotal * (1 - applicableDiscount / 100)).toFixed(2));
 
     // Insertar el pedido en la base de datos
-    const [result] = await pool.query('INSERT INTO orders (table_number, items, total) VALUES (?, ?, ?)', [table_number, JSON.stringify(items), total]);
-    res.json({ id: result.insertId, table_number, items, total });
+    const [result] = await pool.query(
+      'INSERT INTO orders (table_number, items, total) VALUES (?, ?, ?)',
+      [table_number, JSON.stringify(items), totalWithDiscount]
+    );
+
+    res.json({
+      id: result.insertId,
+      table_number,
+      items,
+      total: totalWithDiscount,
+      applied_discount_rate: applicableDiscount // Esto solo se devuelve, no se guarda
+    });
+
   } catch (error) {
+    console.error('Error al crear pedido:', error);
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Actualizar un pedido
 const updateOrder = async (req, res) => {
@@ -68,16 +97,39 @@ const getOrdersByTable = async (req, res) => {
   }
 };
 
-// Marcar pedido como cobrado
+// Marcar pedido como cobrado y mover a paid_orders
 const markOrderAsPaid = async (req, res) => {
   const { id } = req.params;
+
   try {
-    // Aquí se puede actualizar el campo total a 0 si el pedido ha sido pagado
-    await pool.query('UPDATE orders SET total = 0 WHERE id = ?', [id]);
-    res.json({ message: 'Order marked as paid' });
+    // Obtener el pedido original
+    const [rows] = await pool.query('SELECT * FROM orders WHERE id = ?', [id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    const order = rows[0];
+
+    // 🛠️ Asegúrate de que items sea un JSON válido
+    const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+
+    // Insertar en paid_orders
+    await pool.query(
+      'INSERT INTO paid_orders (table_number, items, total) VALUES (?, ?, ?)',
+      [order.table_number, JSON.stringify(items), order.total]
+    );
+
+    // Eliminar de orders
+    await pool.query('DELETE FROM orders WHERE id = ?', [id]);
+
+    res.json({ message: 'Order marked as paid and moved to paid_orders' });
+
   } catch (error) {
+    console.error('Error al cobrar pedido:', error);
     res.status(500).json({ error: error.message });
   }
 };
+
 
 module.exports = { getAllOrders, createOrder, updateOrder, deleteOrder, getOrdersByTable, markOrderAsPaid };

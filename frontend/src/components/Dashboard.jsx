@@ -1,31 +1,31 @@
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 const Dashboard = () => {
   const history = useNavigate();
-  const [userRole, setUserRole] = useState("");
+  const [userRole, setUserRole] = useState('');
 
   useEffect(() => {
-    const role = localStorage.getItem("userRole");
+    const role = localStorage.getItem('userRole');
     setUserRole(role);
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userRole");
-    history("/");
+    localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
+    history('/');
   };
 
   const navigateToEmployeeManagement = () => {
-    history("/employee-management");
+    history('/employee-management');
   };
 
   const navigateToInventoryManagement = () => {
-    history("/inventory-management");
+    history('/inventory-management');
   };
 
   const navigateToPlaceOrder = () => {
-    history("/place-order");
+    history('/place-order');
   };
 
   return (
@@ -34,19 +34,14 @@ const Dashboard = () => {
       <button onClick={handleLogout}>Logout</button>
 
       {/* Mostrar botones solo si el usuario es Encargado */}
-      {userRole === "encargado" && (
+      {userRole === 'encargado' && (
         <>
-          <button onClick={navigateToEmployeeManagement}>
-            Manage Employees
-          </button>
-          <button onClick={navigateToInventoryManagement}>
-            Manage Inventory
-          </button>
+          <button onClick={navigateToEmployeeManagement}>Manage Employees</button>
+          <button onClick={navigateToInventoryManagement}>Manage Inventory</button>
         </>
       )}
-      {(userRole === "encargado" || userRole === "camarero") && (
-        <button onClick={navigateToPlaceOrder}>Place Order</button>
-      )}
+
+      <button onClick={navigateToPlaceOrder}>Place Order</button>
     </div>
   );
 };
