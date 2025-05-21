@@ -1,10 +1,8 @@
--- Crear la base de datos tpv
+-- Crear la base de datos
 CREATE DATABASE tpv;
-
--- Usar la base de datos tpv
 USE tpv;
 
--- Tabla para guardar los usuarios
+-- Tabla de usuarios
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -13,7 +11,14 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla para guardar el inventario
+-- Tabla de mesas
+CREATE TABLE tables (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    table_number INT NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de inventario
 CREATE TABLE inventory (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -21,41 +26,47 @@ CREATE TABLE inventory (
     type VARCHAR(100) NOT NULL
 );
 
--- Tabla para guardar los pedidos
+-- Tabla de pedidos
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    table_number INT NOT NULL,  -- El número de mesa
-    items JSON NOT NULL,        -- Lista de los objetos pedidos en formato JSON
-    total DECIMAL(10, 2) NOT NULL, -- Total del pedido
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    table_id INT NOT NULL,
+    user_id INT, -- Quién hizo el pedido (opcional)
+    total DECIMAL(10,2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (table_id) REFERENCES tables(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
+-- Tabla de ítems de pedido
+CREATE TABLE order_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    inventory_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (inventory_id) REFERENCES inventory(id)
+);
+
+-- Tabla de pedidos cobrados
 CREATE TABLE paid_orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    table_number INT NOT NULL,  -- El número de mesa
-    items JSON NOT NULL,        -- Lista de los objetos pedidos en formato JSON
-    total DECIMAL(10, 2) NOT NULL, -- Total del pedido
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
--- Tabla para guardar las mesas
-CREATE TABLE tables (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    table_number INT NOT NULL,  -- Número de la mesa
-    total DECIMAL(10, 2) DEFAULT 0,  -- Total de todos los pedidos de la mesa
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    order_id INT NOT NULL,
+    paid_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
--- Tabla para registrar las ganancias diarias
-CREATE TABLE daily_revenue (
+-- Tabla de descuentos
+CREATE TABLE discount_rates (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    date DATE NOT NULL,  -- Fecha del día
-    total DECIMAL(10, 2) NOT NULL  -- Total ganado en ese día
-);
-
-CREATE TABLE DiscountRates (
-    id INT PRIMARY KEY AUTO_INCREMENT,
     min_order_amount DECIMAL(10, 2) NOT NULL,
     discount_rate DECIMAL(5, 2) NOT NULL
+);
+
+-- Tabla de ingresos diarios
+CREATE TABLE daily_revenue (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date DATE NOT NULL UNIQUE,
+    total DECIMAL(10,2) NOT NULL
 );
 
 INSERT INTO DiscountRates (min_order_amount, discount_rate) VALUES
