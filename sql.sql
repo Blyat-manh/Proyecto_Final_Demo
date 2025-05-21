@@ -69,7 +69,8 @@ CREATE TABLE daily_revenue (
     total DECIMAL(10,2) NOT NULL
 );
 
-INSERT INTO DiscountRates (min_order_amount, discount_rate) VALUES
+
+INSERT INTO discount_rates (min_order_amount, discount_rate) VALUES
 (50.00, 5.00),
 (100.00, 10.00);
 
@@ -85,17 +86,17 @@ INSERT INTO users (name, password, role) VALUES
 ('Cocina', '$2b$10$eW5p0I1Qq4uZ9O/RHd2YZee6SvM7uK1o7E6MxHKxK1tU1F7c7jq3e', 'cocina');
 
 -- Insertar algunos datos de ejemplo en la tabla inventory
-INSERT INTO inventory (name, price) VALUES 
+INSERT INTO inventory (name, price, type) VALUES 
 ('Pizza', 8.50, 'tapa'),
 ('Pasta', 6.00, 'tapa'),
 ('Ensalada', 4.00, 'tapa'),
 ('Bebida', 2.50, 'bebida');
 
 -- Insertar algunos datos de ejemplo en la tabla tables
-INSERT INTO tables (table_number, total) VALUES 
-(1, 25.00),
-(2, 18.50),
-(3, 15.00);
+INSERT INTO tables (table_number) VALUES 
+(1),
+(2),
+(3);
 
 -- Insertar algunos datos de ejemplo en la tabla daily_revenue
 INSERT INTO daily_revenue (date, total) VALUES 
